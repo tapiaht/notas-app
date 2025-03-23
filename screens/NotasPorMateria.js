@@ -38,7 +38,8 @@ export default function NotasPorMateria() {
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Selecciona curso, trimestre y materia</Text>
-
+    {/* Picker para seleccionar curso */}
+    <View style={styles.pickerContainer}>
       {/* Picker para seleccionar el curso */}
       <Picker
         selectedValue={curso}
@@ -56,9 +57,9 @@ export default function NotasPorMateria() {
         onValueChange={(itemValue) => setTrimestre(itemValue)}
         style={styles.picker}
       >
-        <Picker.Item label="Trimestre 1" value="1" />
-        <Picker.Item label="Trimestre 2" value="2" />
-        <Picker.Item label="Trimestre 3" value="3" />
+        <Picker.Item label="1er Trimestre" value="1" />
+        <Picker.Item label="2do Trimestre" value="2" />
+        <Picker.Item label="3er Trimestre" value="3" />
       </Picker>
 
       {/* Picker para seleccionar la materia */}
@@ -71,7 +72,7 @@ export default function NotasPorMateria() {
           <Picker.Item key={item.value} label={item.label} value={item.value} />
         ))}
       </Picker>
-
+      </View>
       {/* Mostrar notas */}
       <Text style={styles.subtitulo}>
         Notas de {notas?.materia} - Trimestre {notas?.trimestre} - {curso}
@@ -99,12 +100,22 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   titulo: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   subtitulo: { fontSize: 18, fontWeight: "bold", marginVertical: 10 },
-  picker: { height: 50, backgroundColor: "#f0f0f0", marginBottom: 10 },
+  picker: { height: 50, width: 120, backgroundColor: "#f0f0f0", marginBottom: 10, fontSize:10 },
   card: {
     backgroundColor: "#f0f0f0",
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
+  },
+  pickerContainer: {
+    margin: 5,
+    backgroundColor: '#fff',
+    padding: 5,
+    borderRadius: 5,
+    elevation: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap', // Permite envolver los pickers si no caben en la fila
+    //justifyContent: 'space-evenly', // Alinea los pickers
   },
   nombre: { fontSize: 16, fontWeight: "bold" },
   nota: { fontSize: 14, color: "gray" },

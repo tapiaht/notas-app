@@ -1,91 +1,72 @@
 import { StatusBar } from 'expo-status-bar';
-// import { StyleSheet, Text, View, Button } from 'react-native';
-// import { useState } from 'react';
-// import axios from 'axios';
-
-// export default function App() {
-//   const [notas, setNotas] = useState(null);
-
-//   const obtenerNotas = async () => {
-//     try {
-//       const response = await axios.get('https://centralizado.up.railway.app/api/obtener-notas?curso=PrimeroA');
-//       setNotas(response.data);
-//     } catch (error) {
-//       console.error('Error al obtener notas:', error);
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Consulta de Notas</Text>
-//       <Button title="Obtener Notas" onPress={obtenerNotas} />
-//       {notas && <Text>{JSON.stringify(notas, null, 2)}</Text>}
-//       <StatusBar style="auto" />
-//     </View>
-//   );
-// }
-
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
-import React, { useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Button } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { Picker } from "@react-native-picker/picker";
 
 export default function App() {
-  
   const [alumnos, setAlumnos] = useState([]);
-  const obtenerNotas = async () => {
-    try {
-      const response = await axios.get(
-        "https://centralizado.up.railway.app/api/obtener-notas?curso=PrimeroA"
-      );
+  const [curso, setCurso] = useState("PRIMEROA"); // Curso por defecto
 
-      // Convertir la estructura de datos
-      const alumnosTransformados = response.data.data.map((item) => ({
-        id: item[0], // ID del alumno
-        genero: item[1], // Género (F/M)
-        ci: item[2], // Número de carnet
-        nombre: item[3], // Nombre completo
-        nota1: item[4],
-        nota2: item[5],
-        nota3: item[6],
-        nota4: item[7],
-        foto: `https://randomuser.me/api/portraits/${
-          item[1] === "F" ? "women" : "men"
-        }/${item[0]}.jpg`, // Imagen aleatoria según el género
-      }));
+  const cursos = [
+    "PRIMEROA", "PRIMEROB", "SEGUNDOA", "SEGUNDOB", "TERCEROA", "TERCEROB",
+    "CUARTOA", "CUARTOB", "QUINTOA", "QUINTOB", "SEXTOA", "SEXTOB", "SEXTOC", "SEXTOE"
+  ];
 
-      setAlumnos(alumnosTransformados);
-    } catch (error) {
-      console.error("Error al obtener datos:", error);
-    }
-  };
+  useEffect(() => {
+    const obtenerNotas = async () => {
+      try {
+        const response = await axios.get(
+          `https://centralizado.up.railway.app/api/obtener-notas?curso=${curso}`
+        );
+
+        // Transformar los datos recibidos
+        const alumnosTransformados = response.data.data.map((item) => ({
+          id: item[0],
+          genero: item[1],
+          ci: item[2],
+          nombre: item[3],
+          nota1: item[4],
+          nota2: item[5],
+          nota3: item[6],
+          nota4: item[7],
+          foto: `https://randomuser.me/api/portraits/${item[1] === "F" ? "women" : "men"}/${item[0]}.jpg`,
+        }));
+
+        setAlumnos(alumnosTransformados);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
+    };
+
+    obtenerNotas(); // Llamar automáticamente al obtener notas cuando cambia el curso
+  }, [curso]); // Se vuelve a llamar cada vez que cambia el curso
 
   return (
     <View style={styles.container}>
       {/* Encabezado con gradiente */}
       <LinearGradient colors={['#8E2DE2', '#FF416C']} style={styles.header}>
-        <Text style={styles.headerTitle}>Biología 1-A</Text>
-        <Text style={styles.date}>24 - Febrero - 2021</Text>
+        <Text style={styles.headerTitle}>Notas de los Alumnos</Text>
+        <Text style={styles.date}>Selecciona un curso</Text>
       </LinearGradient>
 
-      {/* Botón para obtener datos */}
-      <Button mode="contained" onPress={obtenerNotas} style={styles.button}>
-        Obtener Notas
-      </Button>
+      {/* Picker para seleccionar curso */}
+      <View style={styles.pickerContainer}>
+        <Text style={styles.label}>Selecciona un curso:</Text>
+        <Picker
+          selectedValue={curso}
+          onValueChange={(itemValue) => setCurso(itemValue)} // Cambia el curso seleccionado
+          style={styles.picker}
+        >
+          {cursos.map((cursoItem) => (
+            <Picker.Item key={cursoItem} label={cursoItem} value={cursoItem} />
+          ))}
+        </Picker>
+      </View>
 
       {/* Lista de alumnos */}
-      
       <FlatList
         data={alumnos}
         keyExtractor={(item) => item.id.toString()}
@@ -107,7 +88,7 @@ export default function App() {
           </View>
         )}
       />
-      
+
       <StatusBar style="auto" />
     </View>
   );
@@ -129,18 +110,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
-  list: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: 'red',
-  },
   date: {
     fontSize: 16,
     color: 'white',
   },
-  button: {
+  pickerContainer: {
     margin: 20,
-    backgroundColor: '#6200EE',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    elevation: 3,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
   card: {
     flexDirection: 'row',
@@ -152,20 +140,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 3,
   },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 15,
-  },
-  info: {
-    flex: 1,
-  },
   profilePic: {
     width: 50,
     height: 50,
     borderRadius: 25,
     marginRight: 10,
+  },
+  info: {
+    flex: 1,
   },
   name: {
     fontSize: 18,
@@ -175,5 +157,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 5,
+  },
+  list: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: 'red',
   },
 });
