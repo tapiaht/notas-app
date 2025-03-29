@@ -1,23 +1,38 @@
-import React, { useState } from 'react';
+import React, {  useContext, useEffect, useState } from 'react';
+import { AuthContext } from "../context/AuthContext";
+import { Alert } from "react-native";
 import { View, Text, TextInput, Button, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-
-export default function NotasPorAlumno() {
+import { useRoute } from "@react-navigation/native";
+export default function NotasPorAlumno({navigation}) {
+  const { tipoUsuario,rude_rda } = useContext(AuthContext);
   const [ci, setCi] = useState('');
   const [notas, setNotas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const obtenerNotas = async () => {
-    if (!ci) {
-      setError('Por favor, ingresa un CI válido');
-      return;
+  const route = useRoute(); // Obtiene la información de navegación
+    // Obtener el rude_rda de los parámetros de navegación
+  //const { rude_rda } = route.params || {};
+  console.log("tipo usuario:", tipoUsuario);
+  console.log("ci_rda recibido:", rude_rda);
+  useEffect(() => {
+    if (tipoUsuario !== "alumno") {
+      Alert.alert("Acceso denegado", "Solo los alumnos pueden acceder aquí.");
+      navigation.goBack();  // Vuelve atrás si no es alumno
+    }else if (rude_rda) {
+      obtenerNotas(rude_rda); // Llama a la API automáticamente
     }
+  }, [rude_rda, tipoUsuario]);
+  const obtenerNotas = async (rude) => {
+    // if (!ci) {
+    //   setError('Por favor, ingresa un CI válido');
+    //   return;
+    // }
 
     setLoading(true);
     setError('');
 
     try {
-      const response = await fetch(`https://centralizado.up.railway.app/api/obtener-notas-alumno?ci=${ci}`);
+      const response = await fetch(`https://centralizado.up.railway.app/api/obtener-notas-alumno?ci=${rude}`);
       const data = await response.json();
 
       if (data.error) {
@@ -36,15 +51,15 @@ export default function NotasPorAlumno() {
     <View style={styles.container}>
       <Text style={styles.title}>Consulta tus Notas</Text>
       
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Ingresa tu CI"
         value={ci}
         onChangeText={setCi}
         keyboardType="numeric"
-      />
+      /> */}
 
-      <Button title="Ver libreta" onPress={obtenerNotas} />
+      {/* <Button title="Ver libreta" onPress={obtenerNotas} /> */}
       
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
