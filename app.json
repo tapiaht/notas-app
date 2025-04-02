@@ -29,6 +29,15 @@
       "eas": {
         "projectId": "70df9f64-a31d-4714-9b22-e0426152f7d3"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Necesitamos acceso a la cámara para escanear códigos QR",
+          "microphonePermission": "Necesitamos acceso al micrófono para grabar video"
+        }
+      ]
+    ]
   }
 }
