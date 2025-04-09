@@ -7,8 +7,11 @@ export default function QRScanner({ onScan }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const cameraRef = useRef(null);
-  const [type, setType] = useState(CameraType.back);
-
+  //const [type, setType] = useState(CameraType.back);
+  //const [type, setType] = useState<'front' | 'back'>('back');
+  
+  const [tipo, setTipo ]= useState(CameraType.back);
+  //const [tipo, setTipo] = useState('back');
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -16,11 +19,11 @@ export default function QRScanner({ onScan }) {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = ({ data }) => {
     setScanned(true);
     Alert.alert(
       "Código QR Escaneado",
-      `Tipo: ${type}\nContenido: ${data}`,
+      `Tipo: \nContenido: ${data}`,
       [
         {
           text: "OK",
@@ -34,9 +37,9 @@ export default function QRScanner({ onScan }) {
   };
 
   const toggleCameraType = () => {
-    setType(current =>
-      current === CameraType.back ? CameraType.front : CameraType.back
-    );
+    // setType(current =>
+    //   current === CameraType.back ? CameraType.front : CameraType.back
+    // );
   };
 
   if (hasPermission === null) {
@@ -50,7 +53,7 @@ export default function QRScanner({ onScan }) {
     <View style={styles.container}>
       <Camera
         style={styles.camera}
-        type={type}
+        type={tipo}
         ref={cameraRef}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         barCodeScannerSettings={{

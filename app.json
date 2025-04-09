@@ -20,7 +20,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hit7.notasapp"
+      "package": "com.hit7.notasapp",
+      "permissions": [ 
+      "android.permission.CAMERA"
+    ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,11 +35,7 @@
     },
     "plugins": [
       [
-        "expo-camera",
-        {
-          "cameraPermission": "Necesitamos acceso a la cámara para escanear códigos QR",
-          "microphonePermission": "Necesitamos acceso al micrófono para grabar video"
-        }
+        "expo-camera"
       ]
     ]
   }
